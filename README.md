@@ -1,6 +1,6 @@
 # Movie Review Admin Site
 
-This repository contains the administrative portion of a larger movie review web application. It is designed to support the management and moderation of the main site, including movie data, user activity, reviews, and content administration.
+This repository contains the administrative portion of a larger movie review web application. The final application is a project for my Web Application Programming course at NSCC. 
 
 ## Overview
 
