@@ -12,11 +12,13 @@ public class MoviesController : Controller
         _context = context;
     }
 
+
     // GET: MOVIES
     public async Task<IActionResult> Index()    
     {
         return View(await _context.Movie.ToListAsync());
     }
+
 
     // GET: MOVIES/Details/5
     public async Task<IActionResult> Details(int? id)
@@ -36,11 +38,13 @@ public class MoviesController : Controller
         return View(movie);
     }
 
+
     // GET: MOVIES/Create
     public IActionResult Create()
     {
         return View();
     }
+
 
     // POST: MOVIES/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -49,14 +53,15 @@ public class MoviesController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,Title,RunTime,Genre,Synopsis,Rating,Director,InTheaters,ImageFileName,ReleaseDate")] Movie movie)
     {
-        if (ModelState.IsValid)
+        if (ModelState.IsValid) // vaildate input
         {
-            _context.Add(movie);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            _context.Add(movie); //add new movie to the database
+            await _context.SaveChangesAsync(); //save changes to the database
+            return RedirectToAction(nameof(Index)); // redirect to the index page
         }
         return View(movie);
     }
+
 
     // GET: MOVIES/Edit/5
     public async Task<IActionResult> Edit(int? id)
@@ -73,6 +78,7 @@ public class MoviesController : Controller
         }
         return View(movie);
     }
+
 
     // POST: MOVIES/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -109,6 +115,7 @@ public class MoviesController : Controller
         return View(movie);
     }
 
+
     // GET: MOVIES/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {
@@ -127,6 +134,7 @@ public class MoviesController : Controller
         return View(movie);
     }
 
+
     // POST: MOVIES/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
@@ -141,6 +149,7 @@ public class MoviesController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
+
 
     private bool MovieExists(int? id)
     {
