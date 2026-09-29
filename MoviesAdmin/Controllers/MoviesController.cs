@@ -13,10 +13,12 @@ public class MoviesController : Controller
     }
 
 
-    // GET: MOVIES
+    // GET: MOVIES/Index
     public async Task<IActionResult> Index()    
     {
-        return View(await _context.Movie.ToListAsync());
+        List<Movie> movies = await _context.Movie.ToListAsync();
+
+        return View(movies);
     }
 
 

@@ -11,6 +11,7 @@ namespace MoviesAdmin.Models
         [Required]
         public string Title { get; set; } = string.Empty;
 
+        [Display(Name = "Run Time (minutes)")]
         [MinLength(1)]
         [Required]
         public int RunTime { get; set; } // in minutes
@@ -28,12 +29,16 @@ namespace MoviesAdmin.Models
         [Required]
         public string Director { get; set; } = string.Empty;
 
+        [Display(Name = "In Theaters")]
         [Required]
         public Boolean InTheaters { get; set; } // T/F if movie is currently in theaters
 
+        [Display(Name = "Poster File Name")]
         [Required]
         public string ImageFileName { get; set; } = string.Empty; // poster for movie
-        
+
+        [Display(Name = "Release Date")]
+        [DisplayFormat(DataFormatString = "{0:yyyy, MMM d}")]
         [Required]
         public DateTime ReleaseDate { get; set; } 
 
