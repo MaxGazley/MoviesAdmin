@@ -16,7 +16,9 @@ public class MoviesController : Controller
     // GET: MOVIES/Index
     public async Task<IActionResult> Index()    
     {
-        List<Movie> movies = await _context.Movie.ToListAsync();
+        var movies = await _context.Movie
+            .OrderByDescending(m => m.ReleaseDate) // order by release date descending
+            .ToListAsync(); // get all movies from the database and convert to a list
 
         return View(movies);
     }
