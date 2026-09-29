@@ -30,11 +30,14 @@ body {
   text-align: start;
 }
 
-.form-group {
-    padding: 0.5rem;
-}
-
 .logo{
     height: 5rem;
     width: auto;
+}
+
+.nav-item{
+    font-size: 18px;
+    font-weight: 500;
+    padding-left: 0.3rem;
+    margin-top: 0.7rem;
 }

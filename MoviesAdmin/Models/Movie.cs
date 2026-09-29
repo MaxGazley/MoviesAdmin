@@ -38,7 +38,7 @@ namespace MoviesAdmin.Models
         public string ImageFileName { get; set; } = string.Empty; // poster for movie
 
         [Display(Name = "Release Date")]
-        [DisplayFormat(DataFormatString = "{0:yyyy, MMM d}")]
+        [DisplayFormat(DataFormatString = "{0:MMM d, yyyy}")]
         [Required]
         public DateTime ReleaseDate { get; set; } 
 
