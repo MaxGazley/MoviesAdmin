@@ -7,12 +7,11 @@ namespace MoviesAdmin.Models
         [Required]
         public int Id { get; set; } // unique id 
 
-        [StringLength(100)]
+        [MaxLength(100)]
         [Required]
         public string Title { get; set; } = string.Empty;
 
         [Display(Name = "Run Time (minutes)")]
-        [MinLength(1)]
         [Required]
         public int RunTime { get; set; } // in minutes
         
