@@ -12,6 +12,7 @@ namespace MoviesAdmin.Models
         public string Title { get; set; } = string.Empty;
 
         [Display(Name = "Run Time (minutes)")]
+        [Range(1,500)]
         [Required]
         public int RunTime { get; set; } // in minutes
         
