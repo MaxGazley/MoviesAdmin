@@ -9,9 +9,10 @@
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New Movie Record</a>
 </p>
-<table class="table">
+<table class="table align-middle">
     <thead>
         <tr>
+            <th>Poster</th>
             <th>
                 @Html.DisplayNameFor(model => model.Title)
             </th>
@@ -31,16 +32,19 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(model => item.Title)
+                <img src="@item.ImageFileName" class="IndexPoster" />
             </td>
             <td>
-                @Html.DisplayFor(model => item.Genre)
+                @item.Title
             </td>
             <td>
-                @Html.DisplayFor(model => item.Director)
+                @item.Genre
             </td>
             <td>
-                @Html.DisplayFor(model => item.ReleaseDate)
+                @item.Director
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReleaseDate)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a> 

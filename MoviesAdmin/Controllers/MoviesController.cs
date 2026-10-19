@@ -2,19 +2,23 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAdmin.Models;
+using MoviesAdmin.Services;
 
 public class MoviesController : Controller
 {
     private readonly MoviesAdminContext _context;
+    private readonly AzureStorageService _azureStorage;
 
-    public MoviesController(MoviesAdminContext context)
+    //Constructor
+    public MoviesController(MoviesAdminContext context, AzureStorageService azureStorage)
     {
         _context = context;
+        _azureStorage = azureStorage;
     }
 
 
     // GET: MOVIES/Index
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index()
     {
         var movies = await _context.Movie
             .OrderByDescending(m => m.ReleaseDate) // order by release date descending
@@ -55,10 +59,16 @@ public class MoviesController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Title,RunTime,Genre,Synopsis,Rating,Director,InTheaters,ImageFileName,ReleaseDate")] Movie movie)
+    public async Task<IActionResult> Create([Bind("Id,Title,RunTime,Genre,Synopsis,Rating,Director,InTheaters,ReleaseDate")] Movie movie, IFormFile? Poster)
     {
-        if (ModelState.IsValid) // vaildate input
+        ModelState.Remove(nameof(movie.ImageFileName));
+
+        if (ModelState.IsValid && Poster is not null) // vaildate input
         {
+            //upload poster image to azure blob storage
+            string filename = $"{Guid.NewGuid()}{Path.GetExtension(Poster.FileName)}";
+            movie.ImageFileName = await _azureStorage.UploadFileAsync(Poster, filename);
+
             _context.Add(movie); //add new movie to the database
             await _context.SaveChangesAsync(); //save changes to the database
             return RedirectToAction(nameof(Index)); // redirect to the index page
@@ -89,23 +99,45 @@ public class MoviesController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,Title,RunTime,Genre,Synopsis,Rating,Director,InTheaters,ImageFileName,ReleaseDate")] Movie movie)
+    public async Task<IActionResult> Edit(int? id, [Bind("Id,Title,RunTime,Genre,Synopsis,Rating,Director,InTheaters,ReleaseDate")] Movie movie, IFormFile Poster)
     {
         if (id != movie.Id)
         {
             return NotFound();
         }
 
+        ModelState.Remove(nameof(movie.ImageFileName));
+
         if (ModelState.IsValid)
         {
+            var existingMovie = await _context.Movie.FindAsync(id);
+            if (existingMovie == null)
+            {
+                return NotFound();
+            }
+
             try
             {
-                _context.Update(movie);
+                existingMovie.Title = movie.Title;
+                existingMovie.RunTime = movie.RunTime;
+                existingMovie.Genre = movie.Genre;
+                existingMovie.Synopsis = movie.Synopsis;
+                existingMovie.Rating = movie.Rating;
+                existingMovie.Director = movie.Director;
+                existingMovie.InTheaters = movie.InTheaters;
+                existingMovie.ReleaseDate = movie.ReleaseDate;
+
+                if (Poster is { Length: > 0 })
+                {
+                    string filename = $"{Guid.NewGuid()}{Path.GetExtension(Poster.FileName)}";
+                    existingMovie.ImageFileName = await _azureStorage.UploadFileAsync(Poster, filename);
+                }
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!MovieExists(movie.Id))
+                if (!MovieExists(existingMovie.Id))
                 {
                     return NotFound();
                 }

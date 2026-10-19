@@ -41,3 +41,14 @@ body {
     padding-left: 0.3rem;
     margin-top: 0.7rem;
 }
+
+.DetailsPoster {
+    max-width: 95%;
+    max-height: fit-content;
+    display: block;
+    vertical-align: top;
+}
+
+.IndexPoster {
+    max-height: 80px;
+}
