@@ -99,34 +99,23 @@ public class MoviesController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int? id, [Bind("Id,Title,RunTime,Genre,Synopsis,Rating,Director,InTheaters,ReleaseDate")] Movie movie, IFormFile Poster)
+    public async Task<IActionResult> Edit(int? id, IFormFile? Poster)
     {
-        if (id != movie.Id)
+        if (id == null)
         {
             return NotFound();
         }
 
-        ModelState.Remove(nameof(movie.ImageFileName));
-
-        if (ModelState.IsValid)
+        var existingMovie = await _context.Movie.FindAsync(id);
+        if (existingMovie == null)
         {
-            var existingMovie = await _context.Movie.FindAsync(id);
-            if (existingMovie == null)
-            {
-                return NotFound();
-            }
+            return NotFound();
+        }
 
+        if (await TryUpdateModelAsync(existingMovie, "", movie => movie.Title, movie => movie.RunTime, movie => movie.Genre, movie => movie.Synopsis, movie => movie.Rating, movie => movie.Director, movie => movie.InTheaters, movie => movie.ReleaseDate))
+        {
             try
             {
-                existingMovie.Title = movie.Title;
-                existingMovie.RunTime = movie.RunTime;
-                existingMovie.Genre = movie.Genre;
-                existingMovie.Synopsis = movie.Synopsis;
-                existingMovie.Rating = movie.Rating;
-                existingMovie.Director = movie.Director;
-                existingMovie.InTheaters = movie.InTheaters;
-                existingMovie.ReleaseDate = movie.ReleaseDate;
-
                 if (Poster is { Length: > 0 })
                 {
                     string filename = $"{Guid.NewGuid()}{Path.GetExtension(Poster.FileName)}";
@@ -141,15 +130,15 @@ public class MoviesController : Controller
                 {
                     return NotFound();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
             return RedirectToAction(nameof(Index));
         }
-        return View(movie);
+
+        return View(existingMovie);
     }
+
 
 
     // GET: MOVIES/Delete/5
