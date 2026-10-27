@@ -17,7 +17,7 @@
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Genre)
+                @Html.DisplayNameFor(model => model.Genre.Title)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Director)
@@ -38,7 +38,7 @@
                 @item.Title
             </td>
             <td>
-                @item.Genre
+                @item.Genre?.Title
             </td>
             <td>
                 @item.Director

@@ -1,9 +1,12 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MoviesAdmin.Models;
 using MoviesAdmin.Services;
 
+[Authorize]
 public class MoviesController : Controller
 {
     private readonly MoviesAdminContext _context;
@@ -21,10 +24,20 @@ public class MoviesController : Controller
     public async Task<IActionResult> Index()
     {
         var movies = await _context.Movie
-            .OrderByDescending(m => m.ReleaseDate) // order by release date descending
-            .ToListAsync(); // get all movies from the database and convert to a list
+            .OrderByDescending(m => m.ReleaseDate)
+            .Include(m => m.Genre)
+            .ToListAsync();
 
         return View(movies);
+    }
+
+    private void LoadGenreSelectList(int? selectedGenreId = null)
+    {
+        var genres = _context.Genre
+            .OrderBy(g => g.Title)
+            .ToList();
+
+        ViewData["GenreId"] = new SelectList(genres, "Id", "Title", selectedGenreId);
     }
 
 
@@ -37,6 +50,7 @@ public class MoviesController : Controller
         }
 
         var movie = await _context.Movie
+            .Include(m => m.Genre)
             .FirstOrDefaultAsync(m => m.Id == id);
         if (movie == null)
         {
@@ -50,6 +64,7 @@ public class MoviesController : Controller
     // GET: MOVIES/Create
     public IActionResult Create()
     {
+        LoadGenreSelectList();
         return View();
     }
 
@@ -59,21 +74,28 @@ public class MoviesController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Title,RunTime,Genre,Synopsis,Rating,Director,InTheaters,ReleaseDate")] Movie movie, IFormFile? Poster)
+    public async Task<IActionResult> Create([Bind("Id,Title,RunTime,GenreId,Synopsis,Rating,Director,InTheaters,ReleaseDate")] Movie movie, IFormFile? Poster)
     {
         ModelState.Remove(nameof(movie.ImageFileName));
 
-        if (ModelState.IsValid && Poster is not null) // vaildate input
+        if (!ModelState.IsValid)
         {
-            //upload poster image to azure blob storage
-            string filename = $"{Guid.NewGuid()}{Path.GetExtension(Poster.FileName)}";
-            movie.ImageFileName = await _azureStorage.UploadFileAsync(Poster, filename);
-
-            _context.Add(movie); //add new movie to the database
-            await _context.SaveChangesAsync(); //save changes to the database
-            return RedirectToAction(nameof(Index)); // redirect to the index page
+            LoadGenreSelectList(movie.GenreId);
+            return View(movie);
         }
-        return View(movie);
+
+        if (Poster is null)
+        {
+            LoadGenreSelectList(movie.GenreId);
+            return View(movie);
+        }
+
+        string filename = $"{Guid.NewGuid()}{Path.GetExtension(Poster.FileName)}";
+        movie.ImageFileName = await _azureStorage.UploadFileAsync(Poster, filename);
+
+        _context.Add(movie);
+        await _context.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
     }
 
 
@@ -90,6 +112,8 @@ public class MoviesController : Controller
         {
             return NotFound();
         }
+
+        LoadGenreSelectList(movie.GenreId);
         return View(movie);
     }
 
@@ -112,7 +136,7 @@ public class MoviesController : Controller
             return NotFound();
         }
 
-        if (await TryUpdateModelAsync(existingMovie, "", movie => movie.Title, movie => movie.RunTime, movie => movie.Genre, movie => movie.Synopsis, movie => movie.Rating, movie => movie.Director, movie => movie.InTheaters, movie => movie.ReleaseDate))
+        if (await TryUpdateModelAsync(existingMovie, "", movie => movie.Title, movie => movie.RunTime, movie => movie.GenreId, movie => movie.Synopsis, movie => movie.Rating, movie => movie.Director, movie => movie.InTheaters, movie => movie.ReleaseDate))
         {
             try
             {
@@ -136,6 +160,7 @@ public class MoviesController : Controller
             return RedirectToAction(nameof(Index));
         }
 
+        LoadGenreSelectList(existingMovie.GenreId);
         return View(existingMovie);
     }
 

@@ -1,5 +1,7 @@
+using Auth0.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 using MoviesAdmin.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("MoviesAdminContext") ?? throw new InvalidOperationException("Connection string 'MoviesAdminContext' not found.");
 
@@ -9,6 +11,14 @@ builder.Services.AddDbContext<MoviesAdminContext>(options => options.UseSqlServe
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<AzureStorageService>();
+
+builder.Services.AddAuth0WebAppAuthentication(options =>
+{
+    options.Domain = builder.Configuration["Auth0:Domain"];
+    options.ClientId = builder.Configuration["Auth0:ClientId"];
+    options.ClientSecret = builder.Configuration["Auth0:ClientSecret"];
+    options.Scope = "openid profile email";
+});
 
 var app = builder.Build();
 
@@ -23,6 +33,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -31,6 +42,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();
