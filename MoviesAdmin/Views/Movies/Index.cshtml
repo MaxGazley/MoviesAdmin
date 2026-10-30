@@ -6,9 +6,13 @@
 
 <h1>All Movies</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Create New Movie Record</a>
-</p>
+@if (User.IsInRole("administrator"))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary">Create New Movie Record</a>
+    </p>
+}
+
 <table class="table align-middle">
     <thead>
         <tr>
@@ -52,11 +56,21 @@
             <td>
                 @Html.DisplayFor(modelItem => item.ReleaseDate)
             </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a> 
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary">Details</a> 
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-secondary">Delete</a>
-            </td>
+                @if (User.IsInRole("administrator"))
+                {
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary">Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-secondary">Delete</a>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary">Details</a>
+                    </td>
+                }
+            
         </tr>
 }
     </tbody>

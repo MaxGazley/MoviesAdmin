@@ -33,6 +33,9 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="AudienceRatings" asp-action="Index">Audience Ratings</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="CriticReviews" asp-action="Index">Critic Reviews</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
@@ -40,16 +43,16 @@
                     <ul class="navbar-nav">
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <li class="nav-item">
+                            <li class="nav-item login-margin">
                                 <span class="navbar-text me-2">Hello, @User.Identity.Name!</span>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item login-margin">
                                 <a class="btn btn-outline-secondary" asp-controller="Account" asp-action="Logout">Log out</a>
                             </li>
                         }
                         else
                         {
-                            <li class="nav-item">
+                            <li class="nav-item login-margin">
                                 <a class="btn btn-primary" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Url.Action("Index", "Home")">Log in</a>
                             </li>
                         }

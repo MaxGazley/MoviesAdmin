@@ -8,10 +8,15 @@ namespace MoviesAdmin.Models
         [Required]
         public int Id { get; set; } // unique id 
 
+        //Navigational property to CriticReviews
+        [ValidateNever]
+        public List<CriticReview> CriticReviews { get; set; } = new List<CriticReview>();
+
         [Display(Name = "Genre")]
         [Required]
         public int GenreId { get; set; }
 
+        //Navigational property to Genre
         [ValidateNever]
         public Genre Genre { get; set; } = null!;
 
@@ -32,6 +37,7 @@ namespace MoviesAdmin.Models
         [Required]
         public int AudienceRatingId { get; set; }
 
+        //Navigational property to AudienceRating
         [ValidateNever]
         public AudienceRating AudienceRating { get; set; } = null!;
 

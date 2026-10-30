@@ -29,5 +29,10 @@ namespace MoviesAdmin.Controllers
 
             return;
         }
+
+        public IActionResult Profile()
+        {
+            return View();
+        }
     }
 }

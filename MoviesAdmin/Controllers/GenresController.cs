@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAdmin.Models;
 
-[Authorize]//(Roles = "administrator")
+[Authorize(Roles = "administrator")]
 public class GenresController : Controller
 {
     private readonly MoviesAdminContext _context;
