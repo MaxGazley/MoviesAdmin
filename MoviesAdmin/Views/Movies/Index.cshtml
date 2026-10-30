@@ -20,6 +20,9 @@
                 @Html.DisplayNameFor(model => model.Genre.Title)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.AudienceRating.Title)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Director)
             </th>
             <th>
@@ -39,6 +42,9 @@
             </td>
             <td>
                 @item.Genre?.Title
+            </td>
+            <td>
+                @item.AudienceRating?.Title
             </td>
             <td>
                 @item.Director

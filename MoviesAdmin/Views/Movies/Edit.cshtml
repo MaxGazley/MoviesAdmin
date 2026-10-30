@@ -33,9 +33,9 @@
                 <span asp-validation-for="Synopsis" class="text-danger"></span>
             </div>
             <div class="mb-3">
-                <label asp-for="Rating" class="form-label"></label>
-                <input asp-for="Rating" class="form-control" />
-                <span asp-validation-for="Rating" class="text-danger"></span>
+                <label asp-for="AudienceRatingId" class="form-label"></label>
+                <select asp-for="AudienceRatingId" class="form-select" asp-items="ViewBag.AudienceRatingId"></select>
+                <span asp-validation-for="AudienceRatingId" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <label asp-for="Director" class="form-label"></label>
@@ -46,6 +46,12 @@
                 <label asp-for="InTheaters" class="form-label"></label>
                 <input asp-for="InTheaters" class="form-check-input" />
                 <span asp-validation-for="InTheaters" class="text-danger"></span>
+            </div>
+            <div>
+                <label>Current Poster:</label>
+            </div>
+			<div class="mb-3">
+                <img src="@Model.ImageFileName" alt="Current Poster" class="img-thumbnail" style="max-width: 200px;" />
             </div>
             <div class="mb-3">
                 <label class="form-label">Poster</label>

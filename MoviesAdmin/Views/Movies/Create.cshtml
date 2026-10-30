@@ -36,9 +36,9 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="Rating" class="form-label"></label>
-                <input asp-for="Rating" class="form-control" />
-                <span asp-validation-for="Rating" class="text-danger"></span>
+                <label asp-for="AudienceRatingId" class="form-label"></label>
+                <select asp-for="AudienceRatingId" class="form-select" asp-items="ViewBag.AudienceRatingId"></select>
+                <span asp-validation-for="AudienceRatingId" class="text-danger"></span>
             </div>
 
             <div class="mb-3">

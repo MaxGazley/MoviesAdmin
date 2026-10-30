@@ -28,8 +28,12 @@ namespace MoviesAdmin.Models
         [Required]
         public string Synopsis { get; set; } = string.Empty;
 
+        [Display(Name = "Audience Rating")]
         [Required]
-        public string Rating { get; set; } = string.Empty;
+        public int AudienceRatingId { get; set; }
+
+        [ValidateNever]
+        public AudienceRating AudienceRating { get; set; } = null!;
 
         [Required]
         public string Director { get; set; } = string.Empty;
