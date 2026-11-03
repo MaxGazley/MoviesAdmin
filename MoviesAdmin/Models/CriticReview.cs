@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 
 namespace MoviesAdmin.Models
 {
@@ -9,6 +10,7 @@ namespace MoviesAdmin.Models
 
         public int MovieId { get; set; } // foreign key to Movie
         
+        [ValidateNever]
         public Movie Movie { get; set; } = null!; // Navigational property to Movie
 
         [Required]
@@ -17,6 +19,7 @@ namespace MoviesAdmin.Models
 
         [Required(ErrorMessage = "A rating is required.")]
         [Range(0, 100, ErrorMessage = "Rating must be between 0 and 100.")]
+        [Display(Name = "Rating (0-100%)")]
         public int Rating { get; set; } // 0-100 % 
 
         [Required]

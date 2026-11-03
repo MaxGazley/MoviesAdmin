@@ -38,6 +38,8 @@ public class MoviesController : Controller
             .OrderBy(g => g.Title)
             .ToList();
 
+        selectedGenreId ??= genres.FirstOrDefault(g => g.Title == "Uncategorized")?.Id;
+
         ViewData["GenreId"] = new SelectList(genres, "Id", "Title", selectedGenreId);
     }
 
@@ -46,6 +48,8 @@ public class MoviesController : Controller
         var audienceRatings = _context.AudienceRating
             .OrderBy(a => a.Title)
             .ToList();
+
+        selectedAudienceRatingId ??= audienceRatings.FirstOrDefault(a => a.Title == "Uncategorized")?.Id;
 
         ViewData["AudienceRatingId"] = new SelectList(audienceRatings, "Id", "Title", selectedAudienceRatingId);
     }

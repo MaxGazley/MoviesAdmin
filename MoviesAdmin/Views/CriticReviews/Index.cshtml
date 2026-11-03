@@ -4,7 +4,7 @@
     ViewData["Title"] = "Critic Reviews";
 }
 
-<h1>Critic Reviews</h1>
+<h1>Your Reviews</h1>
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New Critic Review</a>
@@ -14,7 +14,6 @@
     <thead>
         <tr>
             <th>Movie</th>
-            <th>Review</th>
             <th>Rating</th>
             <th>Published</th>
             <th>Created</th>
@@ -26,7 +25,6 @@
         {
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.Movie.Title)</td>
-                <td>@Html.DisplayFor(modelItem => item.Review)</td>
                 <td>@Html.DisplayFor(modelItem => item.Rating)%</td>
                 <td>@Html.DisplayFor(modelItem => item.IsPublished)</td>
                 <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>

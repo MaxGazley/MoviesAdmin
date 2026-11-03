@@ -1,22 +1,33 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MoviesAdmin.Models;
 
-[Authorize(Roles = "administrator")]
+[Authorize(Roles = "administrator, critic")]
 public class CriticReviewsController : Controller
 {
     private readonly MoviesAdminContext _context;
+
+    private string? _userId;
 
     public CriticReviewsController(MoviesAdminContext context)
     {
         _context = context;
     }
 
+    //user object not available when constructor is called, so we need to override OnActionExecuting to get the user id
+    public override void OnActionExecuting(ActionExecutingContext context)
+    {
+        base.OnActionExecuting(context);
+        _userId = User.GetUserId();
+    }
+
     public async Task<IActionResult> Index()
     {
         var criticReviews = await _context.CriticReview
+            .Where(review => review.CreatedBy == _userId)
             .Include(review => review.Movie)
             .OrderBy(review => review.Movie.Title)
             .ThenByDescending(review => review.CreatedDate)
@@ -33,10 +44,11 @@ public class CriticReviewsController : Controller
         }
 
         var criticReview = await _context.CriticReview
+            .Where(review => review.CreatedBy == _userId)
             .Include(review => review.Movie)
             .FirstOrDefaultAsync(review => review.Id == id);
 
-        if (criticReview == null)
+        if (criticReview == null || criticReview.CreatedBy != _userId)
         {
             return NotFound();
         }
@@ -44,19 +56,23 @@ public class CriticReviewsController : Controller
         return View(criticReview);
     }
 
-    public async Task<IActionResult> Create()
+    public async Task<IActionResult> Create(int? movieId)
     {
-        await LoadMovieSelectList();
-        return View();
+        var selectedMovie = movieId.HasValue
+            ? await _context.Movie.FirstOrDefaultAsync(movie => movie.Id == movieId.Value)
+            : null;
+
+        await LoadMovieSelectList(selectedMovie?.Id);
+        ViewData["MovieTitle"] = selectedMovie?.Title;
+        return View(new CriticReview { MovieId = selectedMovie?.Id ?? 0 });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("MovieId,Review,Rating,IsPublished")] CriticReview criticReview)
+    public async Task<IActionResult> Create([Bind("MovieId,Review,Rating,IsPublished")] CriticReview criticReview, string? movieTitle)
     {
-        criticReview.CreatedBy = User.GetUserId();
-        criticReview.CreatedDate = DateTime.Now;
         ModelState.Remove(nameof(CriticReview.CreatedBy));
+        criticReview.CreatedBy = _userId;
 
         if (!await _context.Movie.AnyAsync(movie => movie.Id == criticReview.MovieId))
         {
@@ -71,6 +87,7 @@ public class CriticReviewsController : Controller
         }
 
         await LoadMovieSelectList(criticReview.MovieId);
+        ViewData["MovieTitle"] = movieTitle;
         return View(criticReview);
     }
 
@@ -81,22 +98,29 @@ public class CriticReviewsController : Controller
             return NotFound();
         }
 
-        var criticReview = await _context.CriticReview.FindAsync(id);
-        if (criticReview == null)
+        var criticReview = await _context.CriticReview
+            .Where(review => review.Id == id)
+            .FirstOrDefaultAsync();
+
+        if (criticReview == null || criticReview.CreatedBy != _userId)
         {
             return NotFound();
         }
 
         await LoadMovieSelectList(criticReview.MovieId);
+        ViewData["MovieTitle"] = ((List<Movie>)ViewData["Movies"]!).FirstOrDefault(movie => movie.Id == criticReview.MovieId)?.Title;
         return View(criticReview);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id)
+    public async Task<IActionResult> Edit(int id, string? movieTitle)
     {
-        var criticReview = await _context.CriticReview.FindAsync(id);
-        if (criticReview == null)
+        var criticReview = await _context.CriticReview
+            .Where(review => review.Id == id)
+            .FirstOrDefaultAsync();
+
+        if (criticReview == null || criticReview.CreatedBy != _userId)
         {
             return NotFound();
         }
@@ -111,6 +135,7 @@ public class CriticReviewsController : Controller
             if (!ModelState.IsValid)
             {
                 await LoadMovieSelectList(criticReview.MovieId);
+                ViewData["MovieTitle"] = movieTitle;
                 return View(criticReview);
             }
 
@@ -132,6 +157,7 @@ public class CriticReviewsController : Controller
         }
 
         await LoadMovieSelectList(criticReview.MovieId);
+        ViewData["MovieTitle"] = movieTitle;
         return View(criticReview);
     }
 
@@ -143,10 +169,11 @@ public class CriticReviewsController : Controller
         }
 
         var criticReview = await _context.CriticReview
+            .Where(review => review.CreatedBy == _userId)
             .Include(review => review.Movie)
             .FirstOrDefaultAsync(review => review.Id == id);
 
-        if (criticReview == null)
+        if (criticReview == null || criticReview.CreatedBy != _userId)
         {
             return NotFound();
         }
@@ -158,7 +185,10 @@ public class CriticReviewsController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var criticReview = await _context.CriticReview.FindAsync(id);
+        var criticReview = await _context.CriticReview
+            .Where(review => review.CreatedBy == _userId)
+            .FirstOrDefaultAsync(review => review.Id == id);
+
         if (criticReview != null)
         {
             _context.CriticReview.Remove(criticReview);
@@ -174,6 +204,7 @@ public class CriticReviewsController : Controller
             .OrderBy(movie => movie.Title)
             .ToListAsync();
 
+        ViewData["Movies"] = movies;
         ViewData["MovieId"] = new SelectList(movies, "Id", "Title", selectedMovieId);
     }
 

@@ -26,7 +26,8 @@
 
             <div class="mb-3">
                 <label asp-for="GenreId" class="control-label"></label>
-                <select asp-for="GenreId" class="form-select" asp-items="ViewBag.GenreId"/>
+                <select asp-for="GenreId" class="form-select" asp-items="ViewBag.GenreId"></select>
+                <span asp-validation-for="GenreId" class="text-danger"></span>
             </div>
 
             <div class="mb-3">

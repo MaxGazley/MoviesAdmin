@@ -85,12 +85,14 @@
 {
     <div>
         <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-secondary">Edit</a> 
+        <a asp-controller="CriticReviews" asp-action="Create" asp-route-movieId="@Model?.Id" class="btn btn-secondary">Add Review</a>
         <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </div>
 }
-else
+else if (User.IsInRole("critic"))
 {
     <div>
+        <a asp-controller="CriticReviews" asp-action="Create" asp-route-movieId="@Model?.Id" class="btn btn-secondary">Add Review</a>
         <a asp-action="Index" class="btn btn-secondary">Back to List</a>
     </div>
 }

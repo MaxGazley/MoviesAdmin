@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Edit Critic Review";
+    var movies = ViewData["Movies"] as List<MoviesAdmin.Models.Movie> ?? new List<MoviesAdmin.Models.Movie>();
 }
 
 <h1>Edit Critic Review</h1>
@@ -10,11 +11,28 @@
 <div class="row">
     <div class="col-md-6">
         <form asp-action="Edit" asp-route-id="@Model.Id">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div asp-validation-summary="All" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="mb-3">
-                <label asp-for="MovieId" class="form-label">Movie</label>
-                <select asp-for="MovieId" class="form-select" asp-items="ViewBag.MovieId"></select>
+                <label for="movieTitle" class="form-label">Movie</label>
+                <div id="movieAutocomplete" class="dropdown position-relative">
+                    <div class="input-group">
+                        <input id="movieTitle" name="movieTitle" class="form-control" autocomplete="off"
+                               role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="movieOptions"
+                               value="@(ViewData["MovieTitle"] ?? string.Empty)" />
+                        <button id="movieToggle" class="btn btn-outline-secondary" type="button"
+                                aria-label="Show movie options" aria-expanded="false">&#9662;</button>
+                    </div>
+                    <div id="movieOptions" class="dropdown-menu w-100" role="listbox" style="max-height: 240px; overflow-y: auto;">
+                        @foreach (var movie in movies)
+                        {
+                            <button type="button" class="dropdown-item" role="option"
+                                    data-movie-id="@movie.Id" data-movie-title="@movie.Title">@movie.Title</button>
+                        }
+                        <span id="noMovieMatches" class="dropdown-item-text d-none">No matching movies</span>
+                    </div>
+                </div>
+                <input type="hidden" asp-for="MovieId" />
                 <span asp-validation-for="MovieId" class="text-danger"></span>
             </div>
             <div class="mb-3">
@@ -42,4 +60,68 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        const movieAutocomplete = document.getElementById("movieAutocomplete");
+        const movieTitleInput = document.getElementById("movieTitle");
+        const movieIdInput = document.getElementById("MovieId");
+        const movieToggle = document.getElementById("movieToggle");
+        const movieMenu = document.getElementById("movieOptions");
+        const movieItems = Array.from(movieMenu.querySelectorAll("[data-movie-id]"));
+        const noMovieMatches = document.getElementById("noMovieMatches");
+
+        function showMovieMenu() {
+            movieMenu.classList.add("show");
+            movieToggle.setAttribute("aria-expanded", "true");
+        }
+
+        function hideMovieMenu() {
+            movieMenu.classList.remove("show");
+            movieToggle.setAttribute("aria-expanded", "false");
+        }
+
+        function filterMovieMenu() {
+            const query = movieTitleInput.value.trim().toLocaleLowerCase();
+            let visibleCount = 0;
+
+            movieItems.forEach(item => {
+                const matches = item.dataset.movieTitle.toLocaleLowerCase().includes(query);
+                item.classList.toggle("d-none", !matches);
+                if (matches) visibleCount++;
+            });
+
+            noMovieMatches.classList.toggle("d-none", visibleCount > 0);
+            showMovieMenu();
+        }
+
+        function updateMovieIdFromTitle() {
+            const title = movieTitleInput.value.trim().toLocaleLowerCase();
+            const matches = movieItems.filter(item => item.dataset.movieTitle.trim().toLocaleLowerCase() === title);
+            movieIdInput.value = matches.length === 1 ? matches[0].dataset.movieId : "";
+        }
+
+        movieTitleInput.addEventListener("focus", filterMovieMenu);
+        movieTitleInput.addEventListener("input", () => {
+            updateMovieIdFromTitle();
+            filterMovieMenu();
+        });
+        movieToggle.addEventListener("click", () => {
+            if (movieMenu.classList.contains("show")) {
+                hideMovieMenu();
+            } else {
+                filterMovieMenu();
+                movieTitleInput.focus();
+            }
+        });
+
+        movieItems.forEach(item => item.addEventListener("click", () => {
+            movieTitleInput.value = item.dataset.movieTitle;
+            movieIdInput.value = item.dataset.movieId;
+            movieTitleInput.focus();
+            hideMovieMenu();
+        }));
+
+        document.addEventListener("click", event => {
+            if (!movieAutocomplete.contains(event.target)) hideMovieMenu();
+        });
+    </script>
 }
