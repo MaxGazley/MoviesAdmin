@@ -14,13 +14,13 @@ namespace MoviesAdmin.Models
         public Movie Movie { get; set; } = null!; // Navigational property to Movie
 
         [Required]
-        [StringLength(500, ErrorMessage = "Review cannot exceed 500 characters.")]
+        [StringLength(1000, ErrorMessage = "Review cannot exceed 1000 characters.")]
         public string Review { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A rating is required.")]
-        [Range(0, 100, ErrorMessage = "Rating must be between 0 and 100.")]
-        [Display(Name = "Rating (0-100%)")]
-        public int Rating { get; set; } // 0-100 % 
+        [Range(0, 5, ErrorMessage = "Rating must be between 0 and 5.")]
+        [Display(Name = "Rating (0-5 Stars)")]
+        public int Rating { get; set; } // 0-5 Stars
 
         [Required]
         [Display(Name = "Publish to site")]

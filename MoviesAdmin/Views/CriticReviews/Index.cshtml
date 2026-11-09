@@ -25,13 +25,20 @@
         {
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.Movie.Title)</td>
-                <td>@Html.DisplayFor(modelItem => item.Rating)%</td>
+                <td>@Html.DisplayFor(modelItem => item.Rating) Stars</td>
                 <td>@Html.DisplayFor(modelItem => item.IsPublished)</td>
                 <td>@Html.DisplayFor(modelItem => item.CreatedDate)</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
+                @if (item.IsPublished == true)
+                {
                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-secondary">Delete</a>
+                    }
+                    else
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary">Details</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-secondary">Delete</a>
+                    }
                 </td>
             </tr>
         }

@@ -66,6 +66,7 @@ public class MoviesController : Controller
         var movie = await _context.Movie
             .Include(m => m.Genre)
             .Include(m => m.AudienceRating)
+            .Include(m => m.CriticReviews)
             .FirstOrDefaultAsync(m => m.Id == id);
         if (movie == null)
         {
