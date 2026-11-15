@@ -35,7 +35,7 @@ namespace MoviesAdmin.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AudienceRating");
+                    b.ToTable("AudienceRating", (string)null);
                 });
 
             modelBuilder.Entity("MoviesAdmin.Models.CriticReview", b =>
@@ -64,14 +64,14 @@ namespace MoviesAdmin.Migrations
 
                     b.Property<string>("Review")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("CriticReview");
+                    b.ToTable("CriticReview", (string)null);
                 });
 
             modelBuilder.Entity("MoviesAdmin.Models.Genre", b =>
@@ -88,7 +88,7 @@ namespace MoviesAdmin.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genre");
+                    b.ToTable("Genre", (string)null);
                 });
 
             modelBuilder.Entity("MoviesAdmin.Models.Movie", b =>
@@ -138,7 +138,25 @@ namespace MoviesAdmin.Migrations
 
                     b.HasIndex("GenreId");
 
-                    b.ToTable("Movie");
+                    b.ToTable("Movie", (string)null);
+                });
+
+            modelBuilder.Entity("MoviesAdmin.Models.UserSnapshot", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("UserSnapshot");
                 });
 
             modelBuilder.Entity("MoviesAdmin.Models.CriticReview", b =>

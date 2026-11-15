@@ -6,6 +6,7 @@ public class MoviesAdminContext(DbContextOptions<MoviesAdminContext> options) : 
     public DbSet<MoviesAdmin.Models.Genre> Genre { get; set; } = default!;
     public DbSet<MoviesAdmin.Models.AudienceRating> AudienceRating { get; set; } = default!;
     public DbSet<MoviesAdmin.Models.CriticReview> CriticReview { get; set; } = default!;
+    public DbSet<MoviesAdmin.Models.UserSnapshot> UserSnapshot { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
